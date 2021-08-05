@@ -58,9 +58,10 @@ class Woo_Cbrf_Exchange_Variations extends Woo_Cbrf_Exchange_Currency
      *
      * Add all hooks for variations admin page customization.
      * 
+     * @access   private
      * @return void
      */
-    public function init() {
+    private function init() {
         
         // add custom currency field to admin product page for variations
         add_action( 'woocommerce_variation_options_pricing', [$this, 'get_custom_product_currency_field_variations'], 10, 3 );
