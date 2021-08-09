@@ -192,19 +192,13 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
                 const simple_price_input_id   = $(simple_price_input).attr('id');
                 const simple_price_label      = $(simple_price_input)
                                                     .closest('p')
-                                                    .find('label[for="' + 
-                                                        simple_price_input_id + 
-                                                        '"'
-                                                    );
+                                                    .find(`label[for="${simple_price_input_id}"`);
                 
                 const simple_sale_price_input     = $(this).find('input[type="text"].short.wc_input_price')[1];
                 const simple_sale_price_input_id  = $(simple_sale_price_input).attr('id');
                 const simple_sale_price_label     = $(simple_sale_price_input)
                                                         .closest('p')
-                                                        .find('label[for="' + 
-                                                            simple_sale_price_input_id + 
-                                                            '"'
-                                                        );
+                                                        .find(`label[for="${simple_sale_price_input_id}"`);
                 
                 const simple = {
                     id:         simple_price_input_id,
@@ -222,33 +216,27 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
                     $(selected_currency).val() !== '' ) {
 
                         const selected_currency_symbol = $(selected_currency)
-                                                                .text()
-                                                                .split("(")
-                                                                .pop()
-                                                                .trim()
-                                                                .split(")")[0]
-                                                                .trim();
+                                                            .text()
+                                                            .split("(")
+                                                            .pop()
+                                                            .trim()
+                                                            .split(")")[0]
+                                                            .trim();
                         
-                        $(simple_price_label).html( 
-                            simple.label
-                                .split("(")[0]
-                                .trim() + 
-                                ' (<span style="color:Crimson">' + selected_currency_symbol + '</span>)' 
-                            );
+                        $(simple_price_label).html(` 
+                                ${simple.label.split("(")[0].trim()}  
+                                (<span style="color:Crimson">${selected_currency_symbol}</span>) 
+                            `);
 
                         const simple_sale_price_label_html = $(simple_sale_price_label)
                                                                 .html()
                                                                 .split(") ")
                                                                 .pop();
                             
-                        $(simple_sale_price_label).html( 
-                            simple.sale_label
-                                .split("(")[0]
-                                .trim() + 
-                                ' (<span style="color:Crimson">' + 
-                                selected_currency_symbol + 
-                                '</span>) '
-                            );
+                        $(simple_sale_price_label).html(`
+                                ${simple.sale_label.split("(")[0].trim()} 
+                                (<span style="color:Crimson">${selected_currency_symbol}</span>)
+                            `);
 
                             if( simple.price !== 0 && 
                                 simple.price !== '') {

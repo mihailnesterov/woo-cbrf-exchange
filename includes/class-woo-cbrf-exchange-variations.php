@@ -205,19 +205,13 @@ class Woo_Cbrf_Exchange_Variations extends Woo_Cbrf_Exchange_Currency
                         const variable_price_input_id   = $(variable_price_input).attr('id');
                         const variable_price_label      = $(variable_price_input)
                                                             .closest('p')
-                                                            .find('label[for="' + 
-                                                                variable_price_input_id + 
-                                                                '"'
-                                                            );
+                                                            .find(`label[for="${variable_price_input_id}`);
                         
                         const variable_sale_price_input     = $(this).find('input[type="text"].short.wc_input_price')[1];
                         const variable_sale_price_input_id  = $(variable_sale_price_input).attr('id');
                         const variable_sale_price_label     = $(variable_sale_price_input)
                                                                 .closest('p')
-                                                                .find('label[for="' + 
-                                                                    variable_sale_price_input_id + 
-                                                                    '"'
-                                                                );
+                                                                .find(`label[for="${variable_sale_price_input_id}"`);
                         const variable = {
                             id:         0,
                             number:     variable_price_input_id.split('_').pop(),
@@ -229,14 +223,12 @@ class Woo_Cbrf_Exchange_Variations extends Woo_Cbrf_Exchange_Currency
 
                         variable.id = $(this)
                                         .closest('.woocommerce_variation.wc-metabox')
-                                        .find('h3 input[name="variable_post_id[' + variable.number + ']"]')
+                                        .find(`h3 input[name="variable_post_id[${variable.number}]"]`)
                                         .val();
                         
-                        const selected_currency = $(
-                            'select[name="select_woo_cbrf_exchange_custom_currency[' + 
-                            variable.number + 
-                            ']"] option:selected'
-                        );
+                        const selected_currency = $(`
+                            select[name="select_woo_cbrf_exchange_custom_currency[${variable.number}]"] option:selected
+                        `);
                         
                         if( $(selected_currency).val() !== '0' &&
                             $(selected_currency).val() !== '' ) {
@@ -250,27 +242,22 @@ class Woo_Cbrf_Exchange_Variations extends Woo_Cbrf_Exchange_Currency
                                                                     .trim();
 
                                 
-                                $(variable_price_label).html( 
-                                    variable.label
-                                        .split("(")[0]
-                                        .trim() + 
-                                        ' (<span style="color:Crimson">' + selected_currency_symbol + '</span>)' 
-                                    );
+                                $(variable_price_label).html(` 
+                                        ${variable.label.split("(")[0].trim()} 
+                                        (<span style="color:Crimson">${ selected_currency_symbol}</span>)
+                                    `);
                                 
                                 const variable_sale_price_label_html = $(variable_sale_price_label)
                                                                         .html()
                                                                         .split(") ")
                                                                         .pop();
                                 
-                                $(variable_sale_price_label).html( 
-                                    variable.sale_label
-                                        .split("(")[0]
-                                        .trim() + 
-                                        ' (<span style="color:Crimson">' + 
-                                        selected_currency_symbol + 
-                                        '</span>) ' +
-                                        variable_sale_price_label_html
-                                    );
+                                $(variable_sale_price_label).html(`
+                                    ${variable.sale_label.split("(")[0].trim()} 
+                                        (<span style="color:Crimson">${selected_currency_symbol}</span>)
+                                        &nbsp;
+                                        ${variable_sale_price_label_html}
+                                    `);
 
                                 if( variable.price !== 0 && 
                                     variable.price !== '') {
