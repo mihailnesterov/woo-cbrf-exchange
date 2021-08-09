@@ -128,8 +128,7 @@ class Woo_Cbrf_Exchange_Loader {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-woo-cbrf-exchange-simple.php';
 		// include Woo_Cbrf_Exchange_Variations class
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-woo-cbrf-exchange-variations.php';
-		
-		// create classes instances
+
 		new Woo_Cbrf_Exchange_Simple;
 		new Woo_Cbrf_Exchange_Variations;
 		
