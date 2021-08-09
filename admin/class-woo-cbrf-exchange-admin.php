@@ -97,7 +97,7 @@ class Woo_Cbrf_Exchange_Admin {
 		 */
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/woo-cbrf-exchange-admin.js', array( 'jquery' ), $this->version, false );
-
+		
 	}
 
 }
