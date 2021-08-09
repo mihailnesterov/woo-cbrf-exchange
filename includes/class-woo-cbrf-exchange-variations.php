@@ -205,7 +205,7 @@ class Woo_Cbrf_Exchange_Variations extends Woo_Cbrf_Exchange_Currency
                         const variable_price_input_id   = $(variable_price_input).attr('id');
                         const variable_price_label      = $(variable_price_input)
                                                             .closest('p')
-                                                            .find(`label[for="${variable_price_input_id}`);
+                                                            .find(`label[for="${variable_price_input_id}"`);
                         
                         const variable_sale_price_input     = $(this).find('input[type="text"].short.wc_input_price')[1];
                         const variable_sale_price_input_id  = $(variable_sale_price_input).attr('id');
@@ -233,97 +233,34 @@ class Woo_Cbrf_Exchange_Variations extends Woo_Cbrf_Exchange_Currency
                         if( $(selected_currency).val() !== '0' &&
                             $(selected_currency).val() !== '' ) {
                                 
-                                const selected_currency_symbol = $(selected_currency)
-                                                                    .text()
-                                                                    .split("(")
-                                                                    .pop()
-                                                                    .trim()
-                                                                    .split(")")[0]
-                                                                    .trim();
+                            const selected_currency_symbol = $(selected_currency)
+                                                                .text()
+                                                                .split("(")
+                                                                .pop()
+                                                                .trim()
+                                                                .split(")")[0]
+                                                                .trim();
 
-                                
-                                $(variable_price_label).html(` 
-                                        ${variable.label.split("(")[0].trim()} 
-                                        (<span style="color:Crimson">${ selected_currency_symbol}</span>)
-                                    `);
-                                
-                                const variable_sale_price_label_html = $(variable_sale_price_label)
-                                                                        .html()
-                                                                        .split(") ")
-                                                                        .pop();
-                                
-                                $(variable_sale_price_label).html(`
-                                    ${variable.sale_label.split("(")[0].trim()} 
-                                        (<span style="color:Crimson">${selected_currency_symbol}</span>)
-                                        &nbsp;
-                                        ${variable_sale_price_label_html}
-                                    `);
+                            
+                            $(variable_price_label).html(` 
+                                    ${variable.label.split("(")[0].trim()} 
+                                    (<span style="color:Crimson">${ selected_currency_symbol}</span>)
+                                `);
+                            
+                            const variable_sale_price_label_html = $(variable_sale_price_label)
+                                                                    .html()
+                                                                    .split(") ")
+                                                                    .pop();
+                            
+                            $(variable_sale_price_label).html(`
+                                ${variable.sale_label.split("(")[0].trim()} 
+                                    (<span style="color:Crimson">${selected_currency_symbol}</span>)
+                                    &nbsp;
+                                    ${variable_sale_price_label_html}
+                                `);
 
-                                if( variable.price !== 0 && 
-                                    variable.price !== '') {
-
-                                        $.ajax({
-                                            url: ajaxurl,
-                                            type: 'GET',
-                                            data: {
-                                                action: 'cbrf_exchange_rate_variation',
-                                                variable_id: variable.id
-                                            },
-                                            success(res_currency) {
-                                                
-                                                if( res_currency['data'] && res_currency['data'] !== '' ) {
-
-                                                    const foreign_currency = {
-                                                        owncode, 
-                                                        charcode, 
-                                                        numcode,
-                                                        name,
-                                                        nominal,
-                                                        value
-                                                    } = res_currency['data'];
-
-                                                    $.ajax({
-                                                        url: ajaxurl,
-                                                        type: 'GET',
-                                                        data: {
-                                                            action: 'woocommerce_currency_symbol_variation',
-                                                        },
-                                                        success(res_symbol) {
-                                                            
-                                                            if( res_symbol['data'] && res_symbol['data'] !== '' ) {
-
-                                                                const symbol = res_symbol['data'];
-
-                                                                $(variable_price_input)
-                                                                    .css({"backgroundColor":"LightGoldenRodYellow"})
-                                                                    .closest('p')
-                                                                    .append(`
-                                                                        <span class="calc_woo_cbrf_exchange_custom_currency_price[${variable.number}]">
-                                                                            ${ variable.price } ${selected_currency_symbol} 
-                                                                            &nbsp;
-                                                                            &equals;
-                                                                            &nbsp;
-                                                                            ${ ( parseFloat(variable.price) * (parseFloat(foreign_currency.value) / foreign_currency.nominal) ).toFixed(2) }  
-                                                                            ${ symbol }
-                                                                        </span>
-                                                                    `);
-                                                            } 
-                                                        },
-                                                        error(error) {
-                                                            console.log(`Ajax error woocommerce_currency_symbol_simple: ${JSON.stringify(error)}`);
-                                                        }
-                                                    });
-                                                } 
-                                            },
-                                            error(error) {
-                                                console.log(`Ajax error cbrf_exchange_rate_variation: ${JSON.stringify(error)}`);
-                                            }
-                                        });
-                                    
-                                }
-
-                                if( variable.sale_price !== 0 && 
-                                    variable.sale_price !== '') {
+                            if( variable.price !== 0 && 
+                                variable.price !== '') {
 
                                     $.ajax({
                                         url: ajaxurl,
@@ -357,16 +294,16 @@ class Woo_Cbrf_Exchange_Variations extends Woo_Cbrf_Exchange_Currency
 
                                                             const symbol = res_symbol['data'];
 
-                                                            $(variable_sale_price_input)
+                                                            $(variable_price_input)
                                                                 .css({"backgroundColor":"LightGoldenRodYellow"})
                                                                 .closest('p')
                                                                 .append(`
-                                                                    <span class="calc_woo_cbrf_exchange_custom_currency_sale_price[${variable.number}]">
-                                                                        ${ variable.sale_price } ${selected_currency_symbol} 
+                                                                    <span class="calc_woo_cbrf_exchange_custom_currency_price[${variable.number}]">
+                                                                        ${ variable.price } ${selected_currency_symbol} 
                                                                         &nbsp;
                                                                         &equals;
                                                                         &nbsp;
-                                                                        ${ ( parseFloat(variable.sale_price) * (parseFloat(foreign_currency.value) / foreign_currency.nominal) ).toFixed(2) }  
+                                                                        ${ ( parseFloat(variable.price) * (parseFloat(foreign_currency.value) / foreign_currency.nominal) ).toFixed(2) }  
                                                                         ${ symbol }
                                                                     </span>
                                                                 `);
@@ -382,12 +319,74 @@ class Woo_Cbrf_Exchange_Variations extends Woo_Cbrf_Exchange_Currency
                                             console.log(`Ajax error cbrf_exchange_rate_variation: ${JSON.stringify(error)}`);
                                         }
                                     });
-                                    
-                                }
+                                
+                            }
+
+                            if( variable.sale_price !== 0 && 
+                                variable.sale_price !== '') {
+
+                                $.ajax({
+                                    url: ajaxurl,
+                                    type: 'GET',
+                                    data: {
+                                        action: 'cbrf_exchange_rate_variation',
+                                        variable_id: variable.id
+                                    },
+                                    success(res_currency) {
+                                        
+                                        if( res_currency['data'] && res_currency['data'] !== '' ) {
+
+                                            const foreign_currency = {
+                                                owncode, 
+                                                charcode, 
+                                                numcode,
+                                                name,
+                                                nominal,
+                                                value
+                                            } = res_currency['data'];
+
+                                            $.ajax({
+                                                url: ajaxurl,
+                                                type: 'GET',
+                                                data: {
+                                                    action: 'woocommerce_currency_symbol_variation',
+                                                },
+                                                success(res_symbol) {
+                                                    
+                                                    if( res_symbol['data'] && res_symbol['data'] !== '' ) {
+
+                                                        const symbol = res_symbol['data'];
+
+                                                        $(variable_sale_price_input)
+                                                            .css({"backgroundColor":"LightGoldenRodYellow"})
+                                                            .closest('p')
+                                                            .append(`
+                                                                <span class="calc_woo_cbrf_exchange_custom_currency_sale_price[${variable.number}]">
+                                                                    ${ variable.sale_price } ${selected_currency_symbol} 
+                                                                    &nbsp;
+                                                                    &equals;
+                                                                    &nbsp;
+                                                                    ${ ( parseFloat(variable.sale_price) * (parseFloat(foreign_currency.value) / foreign_currency.nominal) ).toFixed(2) }  
+                                                                    ${ symbol }
+                                                                </span>
+                                                            `);
+                                                    } 
+                                                },
+                                                error(error) {
+                                                    console.log(`Ajax error woocommerce_currency_symbol_simple: ${JSON.stringify(error)}`);
+                                                }
+                                            });
+                                        } 
+                                    },
+                                    error(error) {
+                                        console.log(`Ajax error cbrf_exchange_rate_variation: ${JSON.stringify(error)}`);
+                                    }
+                                });
+                                
+                            }
                         }
                     });
                 });
-        
             });
         </script>
         <?php   

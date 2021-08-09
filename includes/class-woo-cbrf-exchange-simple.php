@@ -215,167 +215,166 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
                 if( $(selected_currency).val() !== '0' &&
                     $(selected_currency).val() !== '' ) {
 
-                        const selected_currency_symbol = $(selected_currency)
-                                                            .text()
-                                                            .split("(")
-                                                            .pop()
-                                                            .trim()
-                                                            .split(")")[0]
-                                                            .trim();
+                    const selected_currency_symbol = $(selected_currency)
+                                                        .text()
+                                                        .split("(")
+                                                        .pop()
+                                                        .trim()
+                                                        .split(")")[0]
+                                                        .trim();
+                    
+                    $(simple_price_label).html(` 
+                            ${simple.label.split("(")[0].trim()}  
+                            (<span style="color:Crimson">${selected_currency_symbol}</span>) 
+                        `);
+
+                    const simple_sale_price_label_html = $(simple_sale_price_label)
+                                                            .html()
+                                                            .split(") ")
+                                                            .pop();
                         
-                        $(simple_price_label).html(` 
-                                ${simple.label.split("(")[0].trim()}  
-                                (<span style="color:Crimson">${selected_currency_symbol}</span>) 
-                            `);
+                    $(simple_sale_price_label).html(`
+                            ${simple.sale_label.split("(")[0].trim()} 
+                            (<span style="color:Crimson">${selected_currency_symbol}</span>)
+                        `);
 
-                        const simple_sale_price_label_html = $(simple_sale_price_label)
-                                                                .html()
-                                                                .split(") ")
-                                                                .pop();
-                            
-                        $(simple_sale_price_label).html(`
-                                ${simple.sale_label.split("(")[0].trim()} 
-                                (<span style="color:Crimson">${selected_currency_symbol}</span>)
-                            `);
-
-                            if( simple.price !== 0 && 
-                                simple.price !== '') {
-                                    
-                                    $.ajax({
-                                        url: ajaxurl,
-                                        type: 'GET',
-                                        data: {
-                                            action: 'cbrf_exchange_rate_simple',
-                                            post_id: woocommerce_admin_meta_boxes_variations.post_id
-                                        },
-                                        success(res_currency) {
-                                            
-                                            if( res_currency['data'] && res_currency['data'] !== '' ) {
-
-                                                const foreign_currency = {
-                                                    owncode, 
-                                                    charcode, 
-                                                    numcode,
-                                                    name,
-                                                    nominal,
-                                                    value
-                                                } = res_currency['data'];
-
-                                                $.ajax({
-                                                    url: ajaxurl,
-                                                    type: 'GET',
-                                                    data: {
-                                                        action: 'woocommerce_currency_symbol_simple',
-                                                    },
-                                                    success(res_symbol) {
-                                                        
-                                                        if( res_symbol['data'] && res_symbol['data'] !== '' ) {
-
-                                                            const symbol = res_symbol['data'];
-
-                                                            $(simple_price_input)
-                                                                .css({"backgroundColor":"LightGoldenRodYellow"})
-                                                                .closest('p')
-                                                                .append(`
-                                                                    <span class="calc_woo_cbrf_exchange_custom_currency_price">
-                                                                        &nbsp;
-                                                                        ${ simple.price } ${selected_currency_symbol}
-                                                                        &nbsp;
-                                                                        &equals;
-                                                                        &nbsp;
-                                                                        ${ ( parseFloat(simple.price) * (parseFloat(foreign_currency.value) / foreign_currency.nominal) ).toFixed(2) } 
-                                                                        ${ symbol }
-                                                                    </span>
-                                                                `);
-                                                        } 
-                                                    },
-                                                    error(error) {
-                                                        console.log(`Ajax error woocommerce_currency_symbol_simple: ${JSON.stringify(error)}`);
-                                                    }
-                                                });
-                                            } 
-                                        },
-                                        error(error) {
-                                            console.log(`Ajax error cbrf_exchange_rate_simple: ${JSON.stringify(error)}`);
-                                        }
-                                    });
+                        if( simple.price !== 0 && 
+                            simple.price !== '') {
                                 
-                                }
+                            $.ajax({
+                                url: ajaxurl,
+                                type: 'GET',
+                                data: {
+                                    action: 'cbrf_exchange_rate_simple',
+                                    post_id: woocommerce_admin_meta_boxes_variations.post_id
+                                },
+                                success(res_currency) {
+                                    
+                                    if( res_currency['data'] && res_currency['data'] !== '' ) {
 
-                            if( simple.sale_price !== 0 && 
-                                simple.sale_price !== '') {
+                                        const foreign_currency = {
+                                            owncode, 
+                                            charcode, 
+                                            numcode,
+                                            name,
+                                            nominal,
+                                            value
+                                        } = res_currency['data'];
 
-                                    $.ajax({
-                                        url: ajaxurl,
-                                        type: 'GET',
-                                        data: {
-                                            action: 'cbrf_exchange_rate_simple',
-                                            post_id: woocommerce_admin_meta_boxes_variations.post_id
-                                        },
-                                        success(res_currency) {
-                                            
-                                            if( res_currency['data'] && res_currency['data'] !== '' ) {
+                                        $.ajax({
+                                            url: ajaxurl,
+                                            type: 'GET',
+                                            data: {
+                                                action: 'woocommerce_currency_symbol_simple',
+                                            },
+                                            success(res_symbol) {
+                                                
+                                                if( res_symbol['data'] && res_symbol['data'] !== '' ) {
 
-                                                const foreign_currency = {
-                                                    owncode, 
-                                                    charcode, 
-                                                    numcode,
-                                                    name,
-                                                    nominal,
-                                                    value
-                                                } = res_currency['data'];
+                                                    const symbol = res_symbol['data'];
 
-                                                $.ajax({
-                                                    url: ajaxurl,
-                                                    type: 'GET',
-                                                    data: {
-                                                        action: 'woocommerce_currency_symbol_simple',
-                                                    },
-                                                    success(res_symbol) {
-                                                        
-                                                        if( res_symbol['data'] && res_symbol['data'] !== '' ) {
-
-                                                            const symbol = res_symbol['data'];
-                                                            
-                                                            $(simple_sale_price_input).css({
-                                                                "backgroundColor":"LightGoldenRodYellow"
-                                                            });
-                                                            
-                                                            $(`<span class="calc_woo_cbrf_exchange_custom_currency_sale_price">
+                                                    $(simple_price_input)
+                                                        .css({"backgroundColor":"LightGoldenRodYellow"})
+                                                        .closest('p')
+                                                        .append(`
+                                                            <span class="calc_woo_cbrf_exchange_custom_currency_price">
                                                                 &nbsp;
-                                                                ${ simple.sale_price } ${selected_currency_symbol}
+                                                                ${ simple.price } ${selected_currency_symbol}
                                                                 &nbsp;
                                                                 &equals;
                                                                 &nbsp;
-                                                                ${ ( parseFloat(simple.sale_price) * (parseFloat(foreign_currency.value) / foreign_currency.nominal) ).toFixed(2) } 
+                                                                ${ ( parseFloat(simple.price) * (parseFloat(foreign_currency.value) / foreign_currency.nominal) ).toFixed(2) } 
                                                                 ${ symbol }
-                                                                </span>
-                                                            `).insertBefore( 
-                                                                    $(simple_sale_price_input)
-                                                                    .closest('p')
-                                                                    .find('span.description')  
-                                                                );
-                                                            
-                                                        } 
-                                                    },
-                                                    error(error) {
-                                                        console.log(`Ajax error woocommerce_currency_symbol_simple: ${JSON.stringify(error)}`);
-                                                    }
-                                                });
-                                            } 
-                                        },
-                                        error(error) {
-                                            console.log(`Ajax error cbrf_exchange_rate_simple: ${JSON.stringify(error)}`);
-                                        }
-                                    });
-                                
-                            }
-                    }
+                                                            </span>
+                                                        `);
+                                                } 
+                                            },
+                                            error(error) {
+                                                console.log(`Ajax error woocommerce_currency_symbol_simple: ${JSON.stringify(error)}`);
+                                            }
+                                        });
+                                    } 
+                                },
+                                error(error) {
+                                    console.log(`Ajax error cbrf_exchange_rate_simple: ${JSON.stringify(error)}`);
+                                }
+                            });
+                        
+                        }
+
+                        if( simple.sale_price !== 0 && 
+                            simple.sale_price !== '') {
+
+                            $.ajax({
+                                url: ajaxurl,
+                                type: 'GET',
+                                data: {
+                                    action: 'cbrf_exchange_rate_simple',
+                                    post_id: woocommerce_admin_meta_boxes_variations.post_id
+                                },
+                                success(res_currency) {
+                                    
+                                    if( res_currency['data'] && res_currency['data'] !== '' ) {
+
+                                        const foreign_currency = {
+                                            owncode, 
+                                            charcode, 
+                                            numcode,
+                                            name,
+                                            nominal,
+                                            value
+                                        } = res_currency['data'];
+
+                                        $.ajax({
+                                            url: ajaxurl,
+                                            type: 'GET',
+                                            data: {
+                                                action: 'woocommerce_currency_symbol_simple',
+                                            },
+                                            success(res_symbol) {
+                                                
+                                                if( res_symbol['data'] && res_symbol['data'] !== '' ) {
+
+                                                    const symbol = res_symbol['data'];
+                                                    
+                                                    $(simple_sale_price_input).css({
+                                                        "backgroundColor":"LightGoldenRodYellow"
+                                                    });
+                                                    
+                                                    $(`<span class="calc_woo_cbrf_exchange_custom_currency_sale_price">
+                                                        &nbsp;
+                                                        ${ simple.sale_price } ${selected_currency_symbol}
+                                                        &nbsp;
+                                                        &equals;
+                                                        &nbsp;
+                                                        ${ ( parseFloat(simple.sale_price) * (parseFloat(foreign_currency.value) / foreign_currency.nominal) ).toFixed(2) } 
+                                                        ${ symbol }
+                                                        </span>
+                                                    `).insertBefore( 
+                                                            $(simple_sale_price_input)
+                                                            .closest('p')
+                                                            .find('span.description')  
+                                                        );
+                                                    
+                                                } 
+                                            },
+                                            error(error) {
+                                                console.log(`Ajax error woocommerce_currency_symbol_simple: ${JSON.stringify(error)}`);
+                                            }
+                                        });
+                                    } 
+                                },
+                                error(error) {
+                                    console.log(`Ajax error cbrf_exchange_rate_simple: ${JSON.stringify(error)}`);
+                                }
+                            });
+                            
+                        }
+                }
                             
             });
         </script>
         <?php
     }
-
     
 }
