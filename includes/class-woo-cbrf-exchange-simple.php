@@ -23,18 +23,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // include Woo_Cbrf_Exchange_Currency class
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-woo-cbrf-exchange-currency.php';
+// include Woo_Cbrf_Exchange_Xml class
+require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-woo-cbrf-exchange-xml.php';
 
 class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
 {
-
-    /**
-	 * The name of selected currency for simple product.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $currency_name    The name of selected currency for simple product.
-	 */
-    private $currency_name;
 
     /**
 	 * Define the core functionality of the class.
@@ -44,20 +37,11 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
 	 *
 	 * @since    1.0.0
 	 */
-    public function __construct()
-    {
-        /*if( class_exists('woocommerce') ) {
-            $this->symbol = get_woocommerce_currency_symbol();
-            $this->symbols = get_woocommerce_currency_symbols();
-            $this->wc_currencies = get_woocommerce_currencies();
-            echo '<div style="float:right"><pre>';
-            var_dump($this->wc_currencies);
-            echo '</pre></div>';
-        }*/
-
-        new Woo_Cbrf_Exchange_Currency();
+    public function __construct() {
         
-        $this->init();
+        new Woo_Cbrf_Exchange_Currency;
+
+        $this->init();        
 
     }
 
@@ -66,8 +50,8 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
      *
      * Add all hooks for simple product admin page customization.
      * 
-     * @access   private
-     * @return void
+     * @access  private
+     * @return  void
      */
     private function init() {
         
@@ -76,6 +60,12 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
 
         // save custom currency for simple product
         add_action('woocommerce_process_product_meta', [$this, 'save_custom_product_currency'], 10);
+
+        // get CBRF exchange rate by ajax for simple product
+        add_action('wp_ajax_cbrf_exchange_rate_simple', [$this, 'get_cbrf_exchange_rate_simple']);
+
+        // get woocommerce currency symbol by ajax for simple product
+        add_action('wp_ajax_woocommerce_currency_symbol_simple', [$this, 'get_woocommerce_currency_symbol_simple']);
 
         // add javascript for simple product admin page
         add_action('admin_footer', [$this, 'custom_currency_admin_simple_js'], 10);
@@ -102,9 +92,6 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
         // get array of all CBRF currencies
         $currencies = $this->get_currencies();
 
-        // get CBRF currency of this variation or empty
-        $this->currency_name = get_post_meta( get_the_ID(), 'woo_cbrf_exchange_custom_currency', true );
-
         // get result array of currencies (with symbols)
         $res_currencies = $this->get_res_currencies($wc_currencies, $currencies);
 
@@ -121,7 +108,7 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
             'desc_tip' => true,
             'style' => 'background-color:LightGoldenRodYellow',
             'wrapper_class' => 'form-field select_woo_cbrf_exchange_custom_currency_field',
-            'value' => $this->currency_name,
+            'value' => get_post_meta( get_the_ID(), 'woo_cbrf_exchange_custom_currency', true ),
             'options' => array_merge( 
                 array(
                     '0' => __('Не выбрана...', 'woo-cbrf-exchange'),
@@ -152,6 +139,41 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
     }
     
     /**
+     * Ajax: get foreign currency exchange rate.
+     *
+     * @since    1.0.0
+	 * @access   public
+     * @return   json            The foreign currency exchange rate
+     */
+    public function get_cbrf_exchange_rate_simple() {
+            
+        // create $xml object
+        $xml = new Woo_Cbrf_Exchange_Xml();
+        
+        // get CBRF exchange rate object by currency name
+        $cbrf_exchange_rate = $xml->get_exchange_rate_by_currency_name( 
+            // get product ID from $_REQUEST
+            get_post_meta( $_REQUEST['post_id'], 'woo_cbrf_exchange_custom_currency', true )
+        );
+
+        wp_send_json_success( $cbrf_exchange_rate );
+    }
+
+    /**
+     * Ajax: get woocommerce currency symbol.
+     *
+     * @since    1.0.0
+	 * @access   public
+     * @return   json            The woocommerce currency symbol
+     */
+    public function get_woocommerce_currency_symbol_simple() {
+            
+        // get woocommerce currency symbol
+        wp_send_json_success( get_woocommerce_currency_symbol() );
+    }
+
+
+    /**
      * Add javascript in admin page for simple product.
      *
      * @since    1.0.0
@@ -161,10 +183,6 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
 
         if( get_current_screen()->id !== 'product' ) 
             return;
-    
-        $symbol = get_woocommerce_currency_symbol();
-
-        $cbrf_currency = $this->get_cbrf_currency_by_name( $this->currency_name );
         
         ?>
         <script type="text/javascript">
@@ -235,42 +253,137 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
                             if( simple.price !== 0 && 
                                 simple.price !== '') {
                                     
-                                    $(simple_price_input)
-                                        .css({"backgroundColor":"LightGoldenRodYellow"})
-                                        .closest('p')
-                                        .append(`
-                                            <span class="calc_woo_cbrf_exchange_custom_currency_price">
-                                                &nbsp;
-                                                ${ simple.price } ${selected_currency_symbol} 
-                                                &equals; 
-                                                ${ parseFloat(simple.price * <?= $cbrf_currency->rate ?>).toFixed(2) } 
-                                                <?= $symbol ?>
-                                            </span>
-                                        `);
+                                    $.ajax({
+                                        url: ajaxurl,
+                                        type: 'GET',
+                                        data: {
+                                            action: 'cbrf_exchange_rate_simple',
+                                            post_id: woocommerce_admin_meta_boxes_variations.post_id
+                                        },
+                                        success(res_currency) {
+                                            
+                                            if( res_currency['data'] && res_currency['data'] !== '' ) {
 
+                                                const foreign_currency = {
+                                                    owncode, 
+                                                    charcode, 
+                                                    numcode,
+                                                    name,
+                                                    nominal,
+                                                    value
+                                                } = res_currency['data'];
+
+                                                $.ajax({
+                                                    url: ajaxurl,
+                                                    type: 'GET',
+                                                    data: {
+                                                        action: 'woocommerce_currency_symbol_simple',
+                                                    },
+                                                    success(res_symbol) {
+                                                        
+                                                        if( res_symbol['data'] && res_symbol['data'] !== '' ) {
+
+                                                            const symbol = res_symbol['data'];
+
+                                                            $(simple_price_input)
+                                                                .css({"backgroundColor":"LightGoldenRodYellow"})
+                                                                .closest('p')
+                                                                .append(`
+                                                                    <span class="calc_woo_cbrf_exchange_custom_currency_price">
+                                                                        &nbsp;
+                                                                        ${ simple.price } ${selected_currency_symbol}
+                                                                        &nbsp;
+                                                                        &equals;
+                                                                        &nbsp;
+                                                                        ${ ( parseFloat(simple.price) * (parseFloat(foreign_currency.value) / foreign_currency.nominal) ).toFixed(2) } 
+                                                                        ${ symbol }
+                                                                    </span>
+                                                                `);
+                                                        } 
+                                                    },
+                                                    error(error) {
+                                                        console.log(`Ajax error woocommerce_currency_symbol_simple: ${JSON.stringify(error)}`);
+                                                    }
+                                                });
+                                            } 
+                                        },
+                                        error(error) {
+                                            console.log(`Ajax error cbrf_exchange_rate_simple: ${JSON.stringify(error)}`);
+                                        }
+                                    });
+                                
                                 }
 
                             if( simple.sale_price !== 0 && 
                                 simple.sale_price !== '') {
-                                
-                                $(simple_sale_price_input).css({
-                                    "backgroundColor":"LightGoldenRodYellow"
-                                    });
-                                 
-                                $(`<span class="calc_woo_cbrf_exchange_custom_currency_sale_price">
-                                    &nbsp;
-                                    ${ simple.sale_price } ${selected_currency_symbol} 
-                                    &equals; 
-                                    ${ parseFloat(simple.sale_price * <?= $cbrf_currency->rate ?>).toFixed(2) } <?= $symbol ?>
-                                </span>`)
-                                .insertBefore( 
-                                    $(simple_sale_price_input)
-                                    .closest('p')
-                                    .find('span.description')  
-                                );
 
+                                    $.ajax({
+                                        url: ajaxurl,
+                                        type: 'GET',
+                                        data: {
+                                            action: 'cbrf_exchange_rate_simple',
+                                            post_id: woocommerce_admin_meta_boxes_variations.post_id
+                                        },
+                                        success(res_currency) {
+                                            
+                                            if( res_currency['data'] && res_currency['data'] !== '' ) {
+
+                                                const foreign_currency = {
+                                                    owncode, 
+                                                    charcode, 
+                                                    numcode,
+                                                    name,
+                                                    nominal,
+                                                    value
+                                                } = res_currency['data'];
+
+                                                $.ajax({
+                                                    url: ajaxurl,
+                                                    type: 'GET',
+                                                    data: {
+                                                        action: 'woocommerce_currency_symbol_simple',
+                                                    },
+                                                    success(res_symbol) {
+                                                        
+                                                        if( res_symbol['data'] && res_symbol['data'] !== '' ) {
+
+                                                            const symbol = res_symbol['data'];
+                                                            
+                                                            $(simple_sale_price_input).css({
+                                                                "backgroundColor":"LightGoldenRodYellow"
+                                                            });
+                                                            
+                                                            $(`<span class="calc_woo_cbrf_exchange_custom_currency_sale_price">
+                                                                &nbsp;
+                                                                ${ simple.sale_price } ${selected_currency_symbol}
+                                                                &nbsp;
+                                                                &equals;
+                                                                &nbsp;
+                                                                ${ ( parseFloat(simple.sale_price) * (parseFloat(foreign_currency.value) / foreign_currency.nominal) ).toFixed(2) } 
+                                                                ${ symbol }
+                                                                </span>
+                                                            `).insertBefore( 
+                                                                    $(simple_sale_price_input)
+                                                                    .closest('p')
+                                                                    .find('span.description')  
+                                                                );
+                                                            
+                                                        } 
+                                                    },
+                                                    error(error) {
+                                                        console.log(`Ajax error woocommerce_currency_symbol_simple: ${JSON.stringify(error)}`);
+                                                    }
+                                                });
+                                            } 
+                                        },
+                                        error(error) {
+                                            console.log(`Ajax error cbrf_exchange_rate_simple: ${JSON.stringify(error)}`);
+                                        }
+                                    });
+                                
                             }
-                    }                
+                    }
+                            
             });
         </script>
         <?php
