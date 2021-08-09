@@ -107,17 +107,6 @@ class Woo_Cbrf_Exchange_Currency
     }
 
     /**
-     * Get selected currency name.
-     *
-     * @since    1.0.0
-	 * @access   protected
-     * @return   string          woo_cbrf_exchange_custom_currency   post meta of product that contains selected currency name
-     */
-    /*protected function get_currency_name() {
-        return get_post_meta( get_the_ID(), 'woo_cbrf_exchange_custom_currency', true );
-    }*/
-
-    /**
      * Get options array.
      *
      * @since    1.0.0
@@ -139,25 +128,6 @@ class Woo_Cbrf_Exchange_Currency
         }
 
         return $res_options;
-    }
-
-    /**
-     * Get CBRF currency object by currency name.
-     *
-     * @since    1.0.0
-	 * @access   protected
-     * @param    string          $currency_name     The currency name for getting CBRF currency object
-     * @return   object          The CBRF currency object for selected option
-     */
-    protected function get_cbrf_currency_by_name( $currency_name = '' ) {
-
-        if( $currency_name === '' ) 
-            return (object) array();
-        
-        return (object) array(
-            'name' => $currency_name,
-            'rate' => 72.89562356
-        );
     }
     
 }
