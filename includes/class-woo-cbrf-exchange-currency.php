@@ -34,7 +34,7 @@ class Woo_Cbrf_Exchange_Currency
      * @return   array          array of available currency names used for exchange rate
      */
     protected function get_currencies() {
-        return array('EUR', 'USD', 'TRY', 'UAH', 'JPY');
+        return get_option('_woo_cbrf_exchange_currencies_selected');
     }
 
     /**
