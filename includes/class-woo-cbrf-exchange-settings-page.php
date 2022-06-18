@@ -54,8 +54,6 @@ class Woo_Cbrf_Exchange_Settings_Page
      */
     public function settings_page_callback() { 
         $this->save_currencies();
-        $transient = get_transient( get_option('_woo_cbrf_exchange_transient_name') );
-        $currencies_selected = get_option('_woo_cbrf_exchange_currencies_selected');
         ?>
         <div class="wrap woo-cbrf-exchange setting-page">
             <header>
