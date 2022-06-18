@@ -29,3 +29,10 @@
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
+
+// Remove plugin's transient
+delete_transient(get_option('_woo_cbrf_exchange_transient_name'));
+
+// Remove all plugin's wp options.
+require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-woo-cbrf-exchange-wp-options.php';
+Woo_Cbrf_Exchange_WP_Options::remove();
