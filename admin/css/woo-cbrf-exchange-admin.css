@@ -2,3 +2,36 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+
+ .woo-cbrf-exchange.setting-page {
+    padding: 0;
+ }
+
+ .woo-cbrf-exchange.setting-page header {
+    padding: 5px 15px 10px 15px;
+    background-color: lightslategrey;
+ }
+
+ .woo-cbrf-exchange.setting-page header h1 {
+    color: #fff;
+ }
+
+ .woo-cbrf-exchange.setting-page .settings {
+    padding: 15px;
+ }
+
+ .woo-cbrf-exchange.setting-page .settings .help {
+    margin: 20px 0;
+ }
+
+ .woo-cbrf-exchange.setting-page .settings .help span {
+    background-color: lightgoldenrodyellow;
+    padding: 10px 15px;
+    font-weight: 400;
+ }
+ .woo-cbrf-exchange.setting-page .settings .success span {
+    background-color: darkseagreen;
+    color: #fff;
+    padding: 10px 15px;
+    font-weight: 400;
+ }
