@@ -175,7 +175,7 @@ class Woo_Cbrf_Exchange_Settings_Page
             name="btn-update-currencies-settings" 
             class="button button-primary"
         >
-            Сохранить настройки
+        <?= __('Сохранить настройки', 'woo-cbrf-exchange') ?>
         </button>
     <?php
     }
