@@ -28,20 +28,6 @@ class Woo_Cbrf_Exchange_Xml
 {
 
     /**
-	 * The plugin currency code.
-	 *
-	 * @since    1.0.0
-	 */
-    const CURRENCY = 'RUB';
-
-    /**
-	 * The URL address of CBRF daily xml file.
-	 *
-	 * @since    1.0.0
-	 */
-    const XML_DAILY_URL = 'http://cbr.ru/scripts/XML_daily.asp';
-
-    /**
 	 * Define the core functionality of the class.
 	 *
      * Load $this->init() method where fires the hooks.
@@ -49,44 +35,6 @@ class Woo_Cbrf_Exchange_Xml
 	 * @since    1.0.0
 	 */
     public function __construct() {}
-
-    /**
-	 * Get CBRF exchange rate by currency name
-	 * 
-	 * @since    1.0.0
-	 * @access   public
-     * @param    string             $currency_name                The currency name as string
-	 * @return   object             The exchange rate object of currency given in param or nothing
-	 */
-	public function get_exchange_rate_by_currency_name( $currency_name = '' ) {
-        
-        // get xml from CBRF site
-        $xml = $this->get_xml_from_cbrf_daily();
-        // get currencies as array of objects
-		$currencies = $this->get_currencies_from_xml( $xml );
-        // firstly exchange rate sould be as array of one object
-        $exchange_rate = array();
-
-        // get result exchange rate as array and save to $exchange_rate
-        if( $currency_name !== '' ) {
-            
-            $exchange_rate = array_values(
-                array_filter(
-                    $currencies,
-                    function( $item ) 
-                        use( $currency_name ) {
-                        return $item->charcode === $currency_name;
-                    }
-                )
-            );
-
-        }
-
-        // return as object
-        if( count( $exchange_rate ) > 0 )
-            return $exchange_rate[0]; 
-        
-	}
 
     /**
      * Get attribute value from xml.
@@ -113,14 +61,13 @@ class Woo_Cbrf_Exchange_Xml
     private function get_currencies_from_xml( $xml ) {
         
         $currencies = array();
-        $json = $this->get_json_from_xml( $xml );
 
-		foreach( $json['Valute'] as $currency ) {
+		foreach( $xml['Valute'] as $currency ) {
 			
 			array_push(
                 $currencies, 
                 (object) array(
-					'owncode'	=> self::CURRENCY, // The plugin currency code
+					'owncode'	=> get_option('_woo_cbrf_exchange_own_currency_code'), // The plugin currency code
 					'numcode'	=> $currency['NumCode'],	// The numeric foreign currency code
 					'charcode'	=> $currency['CharCode'],	// The symbol foreign currency code
 					'nominal'	=> intval( $currency['Nominal'] ),	// The foreign currency nominal
@@ -137,17 +84,23 @@ class Woo_Cbrf_Exchange_Xml
 
 		return $currencies;
     }
-    
 
     /**
      * Get xml file from CBRF daily.
      *
      * @since    1.0.0
 	 * @access   private
-     * @return   array            The array of CBRF exchange rates
+     * @return   array            The cached array of CBRF exchange rates
      */
     private function get_xml_from_cbrf_daily() {
-        return simplexml_load_file( self::XML_DAILY_URL );
+        $cache = get_transient( get_option('_woo_cbrf_exchange_transient_name') );
+        
+        if( false === $cache ) {
+            $this->set_transient_from_cbrf_daily();
+            return get_transient( get_option('_woo_cbrf_exchange_transient_name') );
+        }
+
+        return $cache;
     }
     
 
@@ -188,5 +141,64 @@ class Woo_Cbrf_Exchange_Xml
 	private function round_currency( $currency, $precision = 2 ) {
 		return round( $currency, $precision );
 	}
+
+    /**
+	 * Get CBRF exchange rate by currency name
+	 * 
+	 * @since    1.0.0
+	 * @access   public
+     * @param    string             $currency_name                The currency name as string
+	 * @return   object             The exchange rate object of currency given in param or nothing
+	 */
+	public function get_exchange_rate_by_currency_name( $currency_name = '' ) {
+        
+        // get xml from CBRF site
+        $xml = $this->get_xml_from_cbrf_daily();
+        
+        // get currencies as array of objects
+		$currencies = $this->get_currencies_from_xml( $xml );
+        
+        // firstly exchange rate sould be as array of one object
+        $exchange_rate = array();
+
+        // get result exchange rate as array and save to $exchange_rate
+        if( $currency_name !== '' ) {
+            
+            $exchange_rate = array_values(
+                array_filter(
+                    $currencies,
+                    function( $item ) 
+                        use( $currency_name ) {
+                        return $item->charcode === $currency_name;
+                    }
+                )
+            );
+
+        }
+
+        // return as object
+        if( count( $exchange_rate ) > 0 )
+            return $exchange_rate[0]; 
+        
+	}
+
+
+    /**
+     * Set transient from xml file CBRF daily.
+     *
+     * @since    1.0.0
+	 * @access   public
+     */
+    public function set_transient_from_cbrf_daily() {
+        set_transient( 
+            get_option( '_woo_cbrf_exchange_transient_name' ), 
+            $this->get_json_from_xml(
+                simplexml_load_file( 
+                    get_option( '_woo_cbrf_exchange_xml_daily_url' ) 
+                )
+            ), 
+            intval( get_option( '_woo_cbrf_exchange_transient_hours' ) * HOUR_IN_SECONDS ) 
+        );
+    }
 
 }
