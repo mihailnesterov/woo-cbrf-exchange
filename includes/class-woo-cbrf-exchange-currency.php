@@ -117,17 +117,18 @@ class Woo_Cbrf_Exchange_Currency
      */
     protected function get_options( $res_symbols = array(), $res_currencies = array() ) {
         
-        $res_options = array(); 
+        $_res_options = array(); 
+        $_res_currencies = $res_currencies;
         
         for($i = 0; $i < count( $res_symbols ); $i++ ) {
-            $res_currencies[$i]->symbol = $res_symbols[$i]->symbol;
+            $_res_currencies[$i]->symbol = $res_symbols[$i]->symbol;
         }
         
-        foreach( $res_currencies as $key => $value ) {
-            $res_options[$value->name] = esc_html( "$value->name $value->title ($value->symbol)" );
+        foreach( $_res_currencies as $key => $value ) {
+            $_res_options[$value->name] = esc_html( "$value->name $value->title ($value->symbol)" );
         }
 
-        return $res_options;
+        return $_res_options;
     }
     
 }
