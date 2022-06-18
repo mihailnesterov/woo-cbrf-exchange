@@ -30,7 +30,7 @@ class Woo_Cbrf_Exchange_Deactivator {
 	 * @since    1.0.0
 	 */
 	public static function deactivate() {
-
+		delete_transient(get_option('_woo_cbrf_exchange_transient_name'));
 	}
 
 }
