@@ -61,19 +61,27 @@ class Woo_Cbrf_Exchange_Settings_Page
             </header>
             <?php settings_errors(); ?>
             <div class="settings">
-                <h2><?= __('Список доступных валют', 'woo-cbrf-exchange') ?>:</h2>
+                <h2>
+                    <?= wp_sprintf( 
+                            '%s на: %l',
+                            __('Список конвертируемых валют ЦБ РФ', 'woo-cbrf-exchange'), 
+                            date('d.m.Y')
+                        ) 
+                    ?>
+                </h2>
                 <p class="help">
-                    <span>
-                        <?= __('Отмеченные валюты будут выведены в настройках товаров', 'woo-cbrf-exchange') ?>
-                    </span>
+                    <?= wp_sprintf( 
+                            '%s',
+                            __('Отмеченные валюты будут выведены в настройках товаров', 'woo-cbrf-exchange'), 
+                        )
+                    ?>
                 <p>
-                <?php $this->get_success_message(); ?>
+                
                 <form class="settings-form" method="post" action="" enctype="multipart/form-data">
-                    <ul class="settings-list">
-                        <?php $this->get_settings_list(); ?>
-                    </ul>
-                    <div>
+                    <?php $this->get_settings_list(); ?>
+                    <div class="form-footer">
                         <?php $this->get_submit_button(); ?>
+                        <?php $this->get_success_message(); ?>
                     </div>
                 </form>
             </div>
@@ -112,11 +120,7 @@ class Woo_Cbrf_Exchange_Settings_Page
      */
     private function get_success_message() {
        if(isset($_POST['btn-update-currencies-settings'])):?>
-            <p class="success">
-                <span>
-                    <?= __('Настройки сохранены!', 'woo-cbrf-exchange') ?>
-                </span>
-            <p>
+            <p class="success" title="<?= __('Сохранено', 'woo-cbrf-exchange') ?>">&#10004;</p>
         <?php endif;
     }
 
@@ -129,37 +133,34 @@ class Woo_Cbrf_Exchange_Settings_Page
     private function get_settings_list() {
         $transient = get_transient( get_option('_woo_cbrf_exchange_transient_name') );
         $currencies_selected = get_option('_woo_cbrf_exchange_currencies_selected');
-        
-        foreach($transient['Valute'] as $key => $value): ?>
+    ?>
+        <ul class="settings-list">
+        <?php foreach($transient['Valute'] as $key => $value): ?>
             <li>
                 <label for="<?= esc_attr( $value['CharCode'] ) ?>" >
-                    <input 
-                        type="checkbox" 
-                        id="<?= esc_attr( $value['CharCode'] ) ?>" 
-                        name="<?= esc_attr( $value['CharCode'] ) ?>" 
-                        value="<?= esc_attr( $value['CharCode'] ) ?>" 
-                        <?= in_array( esc_attr( $value['CharCode'] ), $currencies_selected) ? 'checked' : null ?>
-                    />
-                    <?php 
-                        $label = "<b>$value[CharCode]</b> (";
-                        $label .= "$value[Nominal] ";
-                        $label .= "$value[Name] = ";
-                        $label .= round( 
-                            floatval( 
-                                preg_replace( 
-                                    "/[^-0-9\.]/", 
-                                    ".", 
-                                    $value['Value'] 
-                                ) 
-                            ), 4
-                        );
-                        $label .= " " . get_woocommerce_currency_symbol() . ")";
-                        
-                        echo $label;
-                    ?>
+                <?php 
+                    
+                    printf( 
+                            '<input type="%1$s" id="%2$s" name="%2$s" value="%2$s" %3$s />',
+                            'checkbox',
+                            $value['CharCode'],
+                            in_array( esc_attr( $value['CharCode'] ), $currencies_selected) ? 'checked' : null
+                    );
+
+                    printf( 
+                            '<b>%s</b> (%2$s %3$s = %4$s %5$s)',
+                            $value['CharCode'],
+                            $value['Nominal'],
+                            $value['Name'],
+                            round(floatval(preg_replace("/[^-0-9\.]/", ".", $value['Value'] )), 4),
+                            get_woocommerce_currency_symbol()
+                    );
+                ?>
                 </label>
             </li>
-        <?php endforeach;
+        <?php endforeach; ?>
+        </ul>
+    <?php
     }
 
     /**
