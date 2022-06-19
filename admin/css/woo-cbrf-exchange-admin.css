@@ -36,9 +36,10 @@
     display: inline-block;
     background-color: darkseagreen;
     color: #fff;
-    padding: 6px 10px;
+    padding: 5px 9px;
     margin: 0;
     font-weight: 400;
+    border-radius: 3px;
  }
 
  .settings .settings-list {
@@ -48,5 +49,9 @@
  }
 
  .settings .settings-form .form-footer {
+   display: flex;
+   align-items: center;
+   justify-content: flex-start;
+   gap: 8px;
    margin: 15px 0;
  }
