@@ -140,19 +140,19 @@ class Woo_Cbrf_Exchange_Settings_Page
                 <label for="<?= esc_attr( $value['CharCode'] ) ?>" >
                 <?php
                     printf( 
-                            '<input type="%1$s" id="%2$s" name="%2$s" value="%2$s" %3$s />',
-                            'checkbox',
-                            $value['CharCode'],
-                            in_array( esc_attr( $value['CharCode'] ), $currencies_selected) ? 'checked' : null
+                        '<input type="%1$s" id="%2$s" name="%2$s" value="%2$s" %3$s />',
+                        'checkbox',
+                        $value['CharCode'],
+                        in_array( esc_attr( $value['CharCode'] ), $currencies_selected) ? 'checked' : null
                     );
 
                     printf( 
-                            '<b>%s</b> (%2$s %3$s = %4$s %5$s)',
-                            $value['CharCode'],
-                            $value['Nominal'],
-                            $value['Name'],
-                            round(floatval(preg_replace("/[^-0-9\.]/", ".", $value['Value'] )), 4),
-                            get_woocommerce_currency_symbol()
+                        '<b>%s</b> (%2$d %3$s = %4$g %5$s)',
+                        $value['CharCode'],
+                        $value['Nominal'],
+                        $value['Name'],
+                        round(floatval(preg_replace("/[^-0-9\.]/", ".", $value['Value'] )), 4),
+                        get_woocommerce_currency_symbol()
                     );
                 ?>
                 </label>
