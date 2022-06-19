@@ -64,7 +64,7 @@ class Woo_Cbrf_Exchange_Settings_Page
             <div class="settings">
                 <h2>
                     <?= wp_sprintf( 
-                            '%s: %l',
+                            '%s: %s',
                             __('Курсы валют', 'woo-cbrf-exchange'), 
                             date('d.m.Y')
                         ) 
@@ -72,8 +72,9 @@ class Woo_Cbrf_Exchange_Settings_Page
                 </h2>
                 <p class="help">
                     <?= wp_sprintf( 
-                            '%s',
-                            __('Отмеченные валюты будут выведены в настройках товаров', 'woo-cbrf-exchange'), 
+                            '%1$s %2$s',
+                            '&#9745;',
+                            __('Отмеченные валюты доступны в настройках товара', 'woo-cbrf-exchange'), 
                         )
                     ?>
                 <p>
@@ -98,12 +99,12 @@ class Woo_Cbrf_Exchange_Settings_Page
 	 * @access   private
      */
     private function save_currencies() {
-        if(isset($_POST['btn-save-currencies-settings'])) {
+        if(isset($_POST ['btn-save-currencies-settings'])) {
             update_option( 
                 '_woo_cbrf_exchange_currencies_selected', 
                 array_keys(
                     array_filter(
-                        $_POST,
+                        array_map( 'wp_kses_post', $_POST ),
                         function($key) {
                             return $key !== 'btn-save-currencies-settings';
                         },
@@ -135,7 +136,8 @@ class Woo_Cbrf_Exchange_Settings_Page
 	 * @access   private
      */
     private function get_success_message() {
-       if(isset($_POST['btn-save-currencies-settings']) || isset($_POST['btn-update-currencies-settings'])):?>
+       $posts = array_map( 'wp_kses_post', $_POST );
+       if(isset($posts['btn-save-currencies-settings']) || isset($posts['btn-update-currencies-settings'])):?>
             <p class="success" title="<?= __('Выполнено', 'woo-cbrf-exchange') ?>">&#10004;</p>
         <?php endif;
     }
@@ -190,7 +192,7 @@ class Woo_Cbrf_Exchange_Settings_Page
             'submit',
             'btn-save-currencies-settings',
             'button button-primary',
-            __('Сохранить настройки', 'woo-cbrf-exchange')
+            __('Сохранить изменения', 'woo-cbrf-exchange')
         );
     }
 

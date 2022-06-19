@@ -28,7 +28,7 @@
     display: inline-block;
     background-color: lightgoldenrodyellow;
     padding: 10px 15px;
-    margin: 0;
+    margin: 0 0 10px 0;
     font-weight: 400;
  }
 
@@ -48,10 +48,14 @@
    columns: 50px 3;
  }
 
+ .settings .settings-list li {
+   margin-bottom: 10px;
+ }
+
  .settings .settings-form .form-footer {
    display: flex;
    align-items: center;
    justify-content: flex-start;
    gap: 8px;
-   margin: 15px 0;
+   margin: 25px 0 10px 0;
  }
