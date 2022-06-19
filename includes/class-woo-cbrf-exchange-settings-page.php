@@ -168,16 +168,14 @@ class Woo_Cbrf_Exchange_Settings_Page
      * @since    1.0.0
 	 * @access   private
      */
-    private function get_submit_button() { ?>
-        <button 
-            type="submit" 
-            id="btn-update-currencies-settings" 
-            name="btn-update-currencies-settings" 
-            class="button button-primary"
-        >
-        <?= __('Сохранить настройки', 'woo-cbrf-exchange') ?>
-        </button>
-    <?php
+    private function get_submit_button() { 
+        printf( 
+            '<input type="%1$s" id="%2$s" name="%2$s" class="%3$s" value="%4$s" />',
+            'submit',
+            'btn-update-currencies-settings',
+            'button button-primary',
+            __('Сохранить настройки', 'woo-cbrf-exchange')
+        );
     }
     
 }
