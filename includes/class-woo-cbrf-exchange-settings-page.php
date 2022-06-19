@@ -138,8 +138,7 @@ class Woo_Cbrf_Exchange_Settings_Page
         <?php foreach($transient['Valute'] as $key => $value): ?>
             <li>
                 <label for="<?= esc_attr( $value['CharCode'] ) ?>" >
-                <?php 
-                    
+                <?php
                     printf( 
                             '<input type="%1$s" id="%2$s" name="%2$s" value="%2$s" %3$s />',
                             'checkbox',
