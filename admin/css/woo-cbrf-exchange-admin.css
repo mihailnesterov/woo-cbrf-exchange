@@ -24,14 +24,29 @@
     margin: 20px 0;
  }
 
- .woo-cbrf-exchange.setting-page .settings .help span {
+ .woo-cbrf-exchange.setting-page .settings .help {
+    display: inline-block;
     background-color: lightgoldenrodyellow;
     padding: 10px 15px;
+    margin: 0;
     font-weight: 400;
  }
- .woo-cbrf-exchange.setting-page .settings .success span {
+
+ .woo-cbrf-exchange.setting-page .settings .success {
+    display: inline-block;
     background-color: darkseagreen;
     color: #fff;
-    padding: 10px 15px;
+    padding: 6px 10px;
+    margin: 0;
     font-weight: 400;
+ }
+
+ .settings .settings-list {
+   -webkit-columns: 30px 3; /* Chrome, Safari, Opera */
+   -moz-columns: 50px 3; /* Firefox */
+   columns: 50px 3;
+ }
+
+ .settings .settings-form .form-footer {
+   margin: 15px 0;
  }
