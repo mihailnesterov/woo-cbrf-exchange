@@ -23,14 +23,15 @@
 class Woo_Cbrf_Exchange_Deactivator {
 
 	/**
-	 * Short Description. (use period)
+	 * Run the plugin's deactivation tasks.
 	 *
-	 * Long Description.
+	 * Run tasks that the plugin deactivation fires.
 	 *
 	 * @since    1.0.0
 	 */
 	public static function deactivate() {
 		delete_transient(get_option('_woo_cbrf_exchange_transient_name'));
+		wp_clear_scheduled_hook( 'woo_cbrf_exchange_twicedaily_transient_update' );
 	}
 
 }
