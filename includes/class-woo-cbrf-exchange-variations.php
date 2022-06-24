@@ -39,11 +39,8 @@ class Woo_Cbrf_Exchange_Variations extends Woo_Cbrf_Exchange_Currency
 	 * @since    1.0.0
 	 */
     public function __construct() {
-
         new Woo_Cbrf_Exchange_Currency();
-        
         $this->init();
-
     }
 
     /**
@@ -83,10 +80,6 @@ class Woo_Cbrf_Exchange_Variations extends Woo_Cbrf_Exchange_Currency
 	 * @param    object               $variation            The variation object.
      */
     public function get_custom_product_currency_field_variations( $loop, $variation_data, $variation ) {
-
-        /*echo '<div style="float:right;margin-top:100px;margin-right:30px;"><pre>';
-        print_r( $variation );
-        echo '</pre></div>';*/
 
         // get current WooCommerce currency symbol
         $symbol = get_woocommerce_currency_symbol();
@@ -176,7 +169,6 @@ class Woo_Cbrf_Exchange_Variations extends Woo_Cbrf_Exchange_Currency
      * @return   json            The woocommerce currency symbol
      */
     public function get_woocommerce_currency_symbol_variation() {
-            
         // get woocommerce currency symbol
         wp_send_json_success( get_woocommerce_currency_symbol() );
     }
@@ -188,15 +180,12 @@ class Woo_Cbrf_Exchange_Variations extends Woo_Cbrf_Exchange_Currency
 	 * @access   public
      */
     public function custom_currency_admin_variations_js() {
-
         if( get_current_screen()->id !== 'product' ) 
             return;
-
         ?>
         <script type="text/javascript">
             jQuery(document).ready(function($) {
 
-                // https://stackoverflow.com/questions/66626942/where-to-find-a-complete-list-of-javascript-jquery-events-that-fire-on-the-woo
                 $(document).on('woocommerce_variations_loaded', function(event) {
                     
                     $('.woocommerce_variation.wc-metabox .variable_pricing').each(function() {

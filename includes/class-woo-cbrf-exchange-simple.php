@@ -38,11 +38,8 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
 	 * @since    1.0.0
 	 */
     public function __construct() {
-        
         new Woo_Cbrf_Exchange_Currency;
-
-        $this->init();        
-
+        $this->init();     
     }
 
     /**
@@ -180,10 +177,8 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
 	 * @access   public
      */
     public function custom_currency_admin_simple_js() {
-
         if( get_current_screen()->id !== 'product' ) 
             return;
-        
         ?>
         <script type="text/javascript">
             jQuery(document).ready(function($) {
@@ -371,7 +366,7 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
                             
                         }
                 }
-                            
+       
             });
         </script>
         <?php
