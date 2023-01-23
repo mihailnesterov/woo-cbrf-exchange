@@ -135,7 +135,7 @@ class Woo_Cbrf_Exchange_Variations extends Woo_Cbrf_Exchange_Currency
             update_post_meta( 
                 $variation_id, 
                 'woo_cbrf_exchange_custom_currency',
-                esc_attr( $_POST['select_woo_cbrf_exchange_custom_currency'][$i] )
+                sanitize_text_field( $_POST['select_woo_cbrf_exchange_custom_currency'][$i] )
             );
         }
     }
@@ -148,17 +148,18 @@ class Woo_Cbrf_Exchange_Variations extends Woo_Cbrf_Exchange_Currency
      * @return   json            The foreign currency exchange rate
      */
     public function get_cbrf_exchange_rate_variation() {
+        if( wp_doing_ajax() && isset($_REQUEST['variable_id']) ) {
+            // create $xml object
+            $xml = new Woo_Cbrf_Exchange_Xml();
             
-        // create $xml object
-        $xml = new Woo_Cbrf_Exchange_Xml();
-        
-        // get CBRF exchange rate object by currency name
-        $cbrf_exchange_rate = $xml->get_exchange_rate_by_currency_name( 
-            // get variation ID from $_REQUEST
-            get_post_meta( intval($_REQUEST['variable_id']), 'woo_cbrf_exchange_custom_currency', true )
-        );
+            // get CBRF exchange rate object by currency name
+            $cbrf_exchange_rate = $xml->get_exchange_rate_by_currency_name( 
+                // get variation ID from $_REQUEST
+                get_post_meta( intval($_REQUEST['variable_id']), 'woo_cbrf_exchange_custom_currency', true )
+            );
 
-        wp_send_json_success( $cbrf_exchange_rate );
+            wp_send_json_success( $cbrf_exchange_rate );
+        }
     }
 
     /**
@@ -169,8 +170,10 @@ class Woo_Cbrf_Exchange_Variations extends Woo_Cbrf_Exchange_Currency
      * @return   json            The woocommerce currency symbol
      */
     public function get_woocommerce_currency_symbol_variation() {
-        // get woocommerce currency symbol
-        wp_send_json_success( get_woocommerce_currency_symbol() );
+        if( wp_doing_ajax() ) {
+            // get woocommerce currency symbol
+            wp_send_json_success( get_woocommerce_currency_symbol() );
+        }
     }
     
     /**
@@ -292,7 +295,7 @@ class Woo_Cbrf_Exchange_Variations extends Woo_Cbrf_Exchange_Currency
                                                                         &nbsp;
                                                                         &equals;
                                                                         &nbsp;
-                                                                        ${ ( parseFloat(variable.price) * (parseFloat(foreign_currency.value) / foreign_currency.nominal) ).toFixed(2) }  
+                                                                        ${ ( parseFloat(variable.price.replace(',', '.')) * (parseFloat(foreign_currency.value) / foreign_currency.nominal) ).toFixed(2) }  
                                                                         ${ symbol }
                                                                     </span>
                                                                 `);
@@ -355,7 +358,7 @@ class Woo_Cbrf_Exchange_Variations extends Woo_Cbrf_Exchange_Currency
                                                                     &nbsp;
                                                                     &equals;
                                                                     &nbsp;
-                                                                    ${ ( parseFloat(variable.sale_price) * (parseFloat(foreign_currency.value) / foreign_currency.nominal) ).toFixed(2) }  
+                                                                    ${ ( parseFloat(variable.sale_price.replace(',', '.')) * (parseFloat(foreign_currency.value) / foreign_currency.nominal) ).toFixed(2) }  
                                                                     ${ symbol }
                                                                 </span>
                                                             `);
