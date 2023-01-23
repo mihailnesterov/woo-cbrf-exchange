@@ -130,7 +130,7 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
             update_post_meta(
                 $post_id, 
                 'woo_cbrf_exchange_custom_currency', 
-                esc_attr($_POST['select_woo_cbrf_exchange_custom_currency'])
+                sanitize_text_field($_POST['select_woo_cbrf_exchange_custom_currency'])
             );
         }
     }
@@ -143,17 +143,18 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
      * @return   json            The foreign currency exchange rate
      */
     public function get_cbrf_exchange_rate_simple() {
-            
-        // create $xml object
-        $xml = new Woo_Cbrf_Exchange_Xml();
-        
-        // get CBRF exchange rate object by currency name
-        $cbrf_exchange_rate = $xml->get_exchange_rate_by_currency_name( 
-            // get product ID from $_REQUEST
-            get_post_meta( $_REQUEST['post_id'], 'woo_cbrf_exchange_custom_currency', true )
-        );
+        if( wp_doing_ajax() && isset($_REQUEST['post_id']) ) {
+            // create $xml object
+            $xml = new Woo_Cbrf_Exchange_Xml();
+                    
+            // get CBRF exchange rate object by currency name
+            $cbrf_exchange_rate = $xml->get_exchange_rate_by_currency_name( 
+                // get product ID from $_REQUEST
+                get_post_meta( intval($_REQUEST['post_id']), 'woo_cbrf_exchange_custom_currency', true )
+            );
 
-        wp_send_json_success( $cbrf_exchange_rate );
+            wp_send_json_success( $cbrf_exchange_rate );
+        }
     }
 
     /**
@@ -164,9 +165,10 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
      * @return   json            The woocommerce currency symbol
      */
     public function get_woocommerce_currency_symbol_simple() {
-            
-        // get woocommerce currency symbol
-        wp_send_json_success( get_woocommerce_currency_symbol() );
+        if( wp_doing_ajax() ) {
+            // get woocommerce currency symbol
+            wp_send_json_success( get_woocommerce_currency_symbol() );
+        }
     }
 
 
@@ -267,7 +269,6 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
                                                 if( res_symbol['data'] && res_symbol['data'] !== '' ) {
 
                                                     const symbol = res_symbol['data'];
-
                                                     $(simple_price_input)
                                                         .css({"backgroundColor":"LightGoldenRodYellow"})
                                                         .closest('p')
@@ -278,7 +279,7 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
                                                                 &nbsp;
                                                                 &equals;
                                                                 &nbsp;
-                                                                ${ ( parseFloat(simple.price) * (parseFloat(foreign_currency.value) / foreign_currency.nominal) ).toFixed(2) } 
+                                                                ${ ( parseFloat(simple.price.replace(',', '.')) * (parseFloat(foreign_currency.value) / foreign_currency.nominal) ).toFixed(2) } 
                                                                 ${ symbol }
                                                             </span>
                                                         `);
@@ -342,7 +343,7 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
                                                         &nbsp;
                                                         &equals;
                                                         &nbsp;
-                                                        ${ ( parseFloat(simple.sale_price) * (parseFloat(foreign_currency.value) / foreign_currency.nominal) ).toFixed(2) } 
+                                                        ${ ( parseFloat(simple.sale_price.replace(',', '.')) * (parseFloat(foreign_currency.value) / foreign_currency.nominal) ).toFixed(2) } 
                                                         ${ symbol }
                                                         </span>
                                                     `).insertBefore( 
