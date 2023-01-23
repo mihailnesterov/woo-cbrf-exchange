@@ -72,7 +72,6 @@ class Woo_Cbrf_Exchange_Settings_Page
      */
     private function update_currencies() {
         if( $this->updated() ) {
-            require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-woo-cbrf-exchange-xml.php';
             $xml = new Woo_Cbrf_Exchange_Xml;
             $xml->set_transient_from_cbrf_daily();
         }
@@ -364,3 +363,5 @@ class Woo_Cbrf_Exchange_Settings_Page
     }
 
 }
+
+new Woo_Cbrf_Exchange_Settings_Page;

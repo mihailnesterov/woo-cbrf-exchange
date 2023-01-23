@@ -23,8 +23,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // include Woo_Cbrf_Exchange_Currency class
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-woo-cbrf-exchange-currency.php';
-// include Woo_Cbrf_Exchange_Xml class
-require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-woo-cbrf-exchange-xml.php';
 
 class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
 {
@@ -374,3 +372,5 @@ class Woo_Cbrf_Exchange_Simple extends Woo_Cbrf_Exchange_Currency
     }
     
 }
+
+new Woo_Cbrf_Exchange_Simple;

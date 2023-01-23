@@ -24,15 +24,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Woo_Cbrf_Exchange_Transient_Sheduler
 {
     public function __construct() {
-        add_action( 
-            'wp', 
-            array($this, 'woo_cbrf_exchange_transient_update_shedule_event'), 
-            25 
-        );
-        add_action( 
-            'woo_cbrf_exchange_twicedaily_transient_update', 
-            array($this, 'run_transient_update_shedule_task')
-        );
+        add_action( 'wp', [$this, 'woo_cbrf_exchange_transient_update_shedule_event'], 25 );
+        add_action( 'woo_cbrf_exchange_twicedaily_transient_update', [$this, 'run_transient_update_shedule_task']);
     }
 
     /**
@@ -54,9 +47,10 @@ class Woo_Cbrf_Exchange_Transient_Sheduler
 	 * @access   public
      */
     public function run_transient_update_shedule_task() {
-        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-woo-cbrf-exchange-xml.php';
         $xml = new Woo_Cbrf_Exchange_Xml;
         $xml->set_transient_from_cbrf_daily();
     }
     
 }
+
+new Woo_Cbrf_Exchange_Transient_Sheduler;

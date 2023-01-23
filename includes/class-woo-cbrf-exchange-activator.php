@@ -23,16 +23,13 @@
 class Woo_Cbrf_Exchange_Activator {
 
 	/**
-	 * Short Description. (use period)
+	 * Run the plugin's activation tasks.
 	 *
-	 * Long Description.
+	 * Run tasks that the plugin activation fires.
 	 *
 	 * @since    1.0.0
 	 */
 	public static function activate() {
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-woo-cbrf-exchange-wp-options.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-woo-cbrf-exchange-xml.php';
-		
 		Woo_Cbrf_Exchange_WP_Options::setup();
 		$xml = new Woo_Cbrf_Exchange_Xml;
 		$xml->set_transient_from_cbrf_daily();

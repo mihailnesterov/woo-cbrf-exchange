@@ -77,7 +77,7 @@ class Woo_Cbrf_Exchange {
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->define_admin_hooks();
-		$this->define_public_hooks();
+		//$this->define_public_hooks(); // отключить frontend-хуки 
 
 	}
 
@@ -117,10 +117,51 @@ class Woo_Cbrf_Exchange {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-woo-cbrf-exchange-admin.php';
 
 		/**
+		 * The class responsible for defining WP options of the plugin.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-woo-cbrf-exchange-wp-options.php';
+
+		/**
+		 * The class responsible for defining WP transient sheduler of the plugin.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-woo-cbrf-exchange-transient-sheduler.php';
+		
+		/**
+		 * The class responsible for defining of loading exchange rates xml from CBRF web-site.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-woo-cbrf-exchange-xml.php';
+		
+		/**
+		 * The class responsible for defining settings page of the plugin.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-woo-cbrf-exchange-settings-page.php';
+
+		/**
+		 * The class responsible for defining WC simple product's functionality of the plugin.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-woo-cbrf-exchange-simple.php';
+		
+		/**
+		 * The class responsible for defining WC variable product's functionality of the plugin.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-woo-cbrf-exchange-variations.php';
+
+		/**
+		 * The class responsible for defining of getting currencies functionality of the plugin.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-woo-cbrf-exchange-currency.php';
+
+		/**
+		 * The class responsible for defining product's price converting functionality of the plugin.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-woo-cbrf-exchange-price.php';
+
+		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-woo-cbrf-exchange-public.php';
+		// отключить frontend-css & js
+		//require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-woo-cbrf-exchange-public.php';
 
 		$this->loader = new Woo_Cbrf_Exchange_Loader();
 
