@@ -149,11 +149,10 @@ class Woo_Cbrf_Exchange_Price
     }
 
     /**
-     * Function for `woocommerce_variable_price_html` filter-hook.
+     * Get converted variable product's price html.
      * 
      * @param  string       $price_html 
-     * @param  WC_Product   $product         
-     *
+     * @param  WC_Product   $product
      * @return string
      */
     
