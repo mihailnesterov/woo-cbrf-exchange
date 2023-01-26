@@ -24,14 +24,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Woo_Cbrf_Exchange_Price
 {
 
+    /**
+     * CBRF daily xml exchange rates instanse.
+     * 
+     * @since   1.0.0
+     * @access  private
+     */
+    private $xml;
+
     public function __construct() {
+        $this->xml = new Woo_Cbrf_Exchange_Xml;
         $this->init();
     }
 
     /**
      * Class instance initialization method.
      *
-     * Add all hooks for simple product admin page customization.
+     * Add all hooks for product price conversion.
      * 
      * @since   1.0.0
      * @access  private
@@ -54,6 +63,9 @@ class Woo_Cbrf_Exchange_Price
         // add hash for variations price
         add_filter('woocommerce_get_variation_prices_hash', [$this, 'get_variation_prices_hash']);
 
+        // add variable product's price html
+        add_filter( 'woocommerce_variable_price_html', [$this, 'get_variable_price_html'], 888, 2 );
+
     }
 
     /**
@@ -61,21 +73,39 @@ class Woo_Cbrf_Exchange_Price
      *
      * @since    1.0.0
 	 * @access   private
-     * @return   float|false        converted price value or false if product doesn't have foreign currency metabox value
+     * @return   float      converted price if product has foreign currency metabox value
      */
     private function convert_price( $price, $product ) {
         
         if( $currency = get_post_meta( $product->get_id(), 'woo_cbrf_exchange_custom_currency', true ) ) {
-            
-            $xml = new Woo_Cbrf_Exchange_Xml;
-            $rate = $xml->get_exchange_rate_by_currency_name( $currency );
-            
+
+            $rate = $this->xml->get_exchange_rate_by_currency_name( $currency );
+
             if( $rate ) {
-                return round( $price * ($rate->value / $rate->nominal), 2 );
+                return round( floatval($price) * ( floatval($rate->value) / intval($rate->nominal) ), 2 );
             }
         }
 
-        return false;
+        return $price;
+    }
+
+    /**
+     * Get product's available variations display prices.
+     *
+     * @since    1.0.0
+	 * @access   private
+     * @param    WC_Product     $product
+     * @return   array
+     */
+    private function get_variations_display_prices( $product ) {
+        return array_unique( 
+            array_map(
+                function($variation) {
+                    return $variation['display_price'];
+                },
+                $product->get_available_variations()
+            )
+        );
     }
 
     /**
@@ -88,10 +118,7 @@ class Woo_Cbrf_Exchange_Price
      * @return   float
      */
     public function get_converted_price( $price, $product ) {
-
-        $converted_price = $this->convert_price( $price, $product );
-
-        return false === $converted_price ? $price : $converted_price;
+        return $this->convert_price( $price, $product );
     }
 
     /**
@@ -105,7 +132,7 @@ class Woo_Cbrf_Exchange_Price
      * @return   float
      */
     public function get_converted_variations_price( $price, $variation, $product ) {
-        return $this->get_converted_price( $price, $product );
+        return $this->convert_price( $price, $product );
     }
 
     /**
@@ -119,6 +146,47 @@ class Woo_Cbrf_Exchange_Price
     public function get_variation_prices_hash( $hash ) {
         $hash[] = get_current_user_id();
         return $hash;
+    }
+
+    /**
+     * Function for `woocommerce_variable_price_html` filter-hook.
+     * 
+     * @param  string       $price_html 
+     * @param  WC_Product   $product         
+     *
+     * @return string
+     */
+    
+	public function get_variable_price_html( $price_html, $product ) {
+
+        $variations_display_prices = $this->get_variations_display_prices( $product );
+
+        if( count($variations_display_prices) >= 2 ) {
+            
+            sort( $variations_display_prices );
+
+            $min_price = current( $variations_display_prices );
+            $max_price = end( $variations_display_prices );
+
+            $min_price_html = wc_price( 
+                wc_get_price_to_display( 
+                    $product, 
+                    array( 'price' => $this->convert_price( $min_price, $product ) )
+                )
+            );
+
+            $max_price_html = wc_price( 
+                wc_get_price_to_display( 
+                    $product, 
+                    array( 'price' => $this->convert_price( $max_price, $product ) ) 
+                ) 
+            );
+            
+            $price_html = sprintf( '%s - %s', $min_price_html, $max_price_html );
+
+        }
+        
+        return $price_html;
     }
     
 }
