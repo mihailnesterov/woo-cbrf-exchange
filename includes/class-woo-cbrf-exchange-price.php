@@ -73,7 +73,9 @@ class Woo_Cbrf_Exchange_Price
      *
      * @since    1.0.0
 	 * @access   private
-     * @return   float      converted price if product has foreign currency metabox value
+     * @param    float          $price
+     * @param    WC_Product     $product
+     * @return   float          converted price if product has foreign currency metabox value
      */
     private function convert_price( $price, $product ) {
         
@@ -153,9 +155,9 @@ class Woo_Cbrf_Exchange_Price
      * 
      * @since    1.0.0
 	 * @access   public
-     * @param  string       $price_html 
-     * @param  WC_Product   $product
-     * @return string
+     * @param    string       $price_html 
+     * @param    WC_Product   $product
+     * @return   string
      */
     
 	public function get_variable_price_html( $price_html, $product ) {
