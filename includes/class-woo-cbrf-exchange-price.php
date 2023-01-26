@@ -151,6 +151,8 @@ class Woo_Cbrf_Exchange_Price
     /**
      * Get converted variable product's price html.
      * 
+     * @since    1.0.0
+	 * @access   public
      * @param  string       $price_html 
      * @param  WC_Product   $product
      * @return string
