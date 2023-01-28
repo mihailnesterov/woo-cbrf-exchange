@@ -79,7 +79,7 @@ class Woo_Cbrf_Exchange_Price
      */
     private function convert_price( $price, $product ) {
         
-        if( $currency = get_post_meta( $product->get_id(), 'woo_cbrf_exchange_custom_currency', true ) ) {
+        if( $currency = get_post_meta( $product->get_id(), 'woo_cbrf_exchange_custom_currency', true ) ) {         
 
             $rate = $this->xml->get_exchange_rate_by_currency_name( $currency );
 
@@ -164,7 +164,7 @@ class Woo_Cbrf_Exchange_Price
 
         $variations_display_prices = $this->get_variations_display_prices( $product );
 
-        if( count($variations_display_prices) >= 2 ) {
+        if( ! empty($variations_display_prices) && count($variations_display_prices) >= 2 ) {
             
             sort( $variations_display_prices );
 
