@@ -30,7 +30,6 @@ class Woo_Cbrf_Exchange_WP_Options
 	 * @since    1.0.0
 	 */
     const OPTIONS = array(
-        '_woo_cbrf_exchange_own_currency_code' => 'RUB',
         '_woo_cbrf_exchange_currencies_selected' => array('EUR', 'USD'),
         '_woo_cbrf_exchange_xml_daily_url' => 'http://cbr.ru/scripts/XML_daily.asp',
 		'_woo_cbrf_exchange_transient_name' => '_woo_cbrf_exchange_transient',
